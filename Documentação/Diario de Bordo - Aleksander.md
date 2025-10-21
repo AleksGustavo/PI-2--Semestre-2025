@@ -8,13 +8,8 @@ que serão implementados de acordo com o projeto.
 10-09-25
 Aleksander:
     Hoje, no meu horário de almoço, dei continuidade à documentação do projeto e início à criação do banco de dados.
+    Também ficarei responsável pelos diagramas de caso de uso e de sequência.
 
-16-09-25
-Marcos:
-    Hoje eu criei a tela de login com html e css além de termos definido qual diagrama cada integrante vai ficar responsável.
-    Everton:     Diagrama de Classe;
-    Aleksander:  Diagrama de Caso de Uso;
-    Aleksander: Diagrama de Sequência.
 
 13-10-25
 Aleksander:
@@ -23,3 +18,11 @@ Aleksander:
 quanto o de atributos das tabelas.
     Criamos também algumas telas, o logotipo e a melhor das coisas: estamos administrando nosso projeto no Jira. Abaixo estará o link:
     https://petepet.atlassian.net/jira/software/projects/KAN/boards/1?atlOrigin=eyJpIjoiYmRkMTkwMGIxYzZhNDA2NGE5Y2IwMGU0NGJhOGRiNjIiLCJwIjoiaiJ9
+
+20-10-25:
+    Hoje, criei alguns diagramas de sequência para complementar o PI.
+    - Agendamento de Serviço de Banho e Tosa
+    - Cadastro de Cliente e Pet
+    - Compra e Entrada de Estoque
+    - Realização de venda (Checkout)
+    - Registro de Histórico Veterinário e Vacinas
