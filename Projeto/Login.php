@@ -1,8 +1,9 @@
 <?php
+// Arquivo: login.php (Versão PDO com verificação BCRYPT - Recomendado)
 
 session_start(); 
 
-require_once 'conexao.php';
+require_once 'conexao.php'; // Inclui a conexão PDO ($pdo)
 
 $mensagem_status = "";
 $sucesso = false;
@@ -10,48 +11,62 @@ $sucesso = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
- 
-    $usuario_digitado = mysqli_real_escape_string($conexao, $_POST['username']);
-    $senha_digitada = $_POST['password'];
+    // 1. VERIFICAÇÃO CRÍTICA DE CONEXÃO
+    if (!isset($pdo)) {
+        $mensagem_status = "<h2 class='text-danger'>Erro crítico: Falha na conexão com o banco de dados.</h2>";
+        goto exibir_html;
+    }
+    
+    // 2. Coletar e limpar dados
+    $usuario_digitado = trim($_POST['username'] ?? '');
+    $senha_digitada = $_POST['password'] ?? '';
 
+    // 3. Consulta Segura (Prepared Statement)
+    // ATENÇÃO: Confirme se as colunas são 'usuario' e 'senha_hash'
+    $sql = "SELECT id, usuario, senha_hash FROM usuarios WHERE usuario = ?";
+    
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$usuario_digitado]);
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $sql = "SELECT id, username, password FROM usuarios WHERE username = '$usuario_digitado'";
-    $resultado = mysqli_query($conexao, $sql);
-
-    if (mysqli_num_rows($resultado) == 1) {
-        $linha = mysqli_fetch_assoc($resultado);
-        $hash_senha_bd = $linha['password']; 
-        
-        
-        if (password_verify($senha_digitada, $hash_senha_bd)) {
-      
-            $sucesso = true;
+        // 4. Verifica se o usuário existe
+        if ($usuario) {
             
+            $hash_senha_bd = $usuario['senha_hash']; 
             
-            $_SESSION['logado'] = true;
-            $_SESSION['user_id'] = $linha['id']; 
-            $_SESSION['username'] = $linha['username']; 
-
+            // 5. Verifica a Senha (USANDO BCRYPT - O método seguro de password_verify)
+            // Este é o método que corresponde ao password_hash do registrar.php
+            if (password_verify($senha_digitada, $hash_senha_bd)) { 
             
-            mysqli_close($conexao);
-            
-            
-            header("Location: dashboard.php"); 
-            exit(); 
-            
+                $sucesso = true;
+                
+                // 6. Configura a Sessão
+                $_SESSION['logado'] = true;
+                $_SESSION['user_id'] = $usuario['id']; 
+                $_SESSION['username'] = $usuario['usuario']; 
+                
+                // 7. Redireciona
+                header("Location: dashboard.php"); 
+                exit(); 
+                
+            } else {
+                // Senha incorreta
+                $mensagem_status = "<h2 class='text-danger'>Usuário ou senha incorretos!</h2>";
+            }
         } else {
-        
+            // Usuário não encontrado
             $mensagem_status = "<h2 class='text-danger'>Usuário ou senha incorretos!</h2>";
         }
-    } else {
-       
-        $mensagem_status = "<h2 class='text-danger'>Usuário ou senha incorretos!</h2>";
+    
+    } catch (PDOException $e) {
+        // Erro de Banco de Dados
+        $mensagem_status = "<h2 class='text-danger'>Erro no servidor (BD). Tente novamente.</h2>";
+        // O ideal é logar $e->getMessage() para debug
     }
 }
 
-if (isset($conexao) && !$sucesso) {
-    mysqli_close($conexao);
-}
+exibir_html: 
 ?>
 
 <!DOCTYPE html>
@@ -85,7 +100,7 @@ if (isset($conexao) && !$sucesso) {
                 
             <?php endif; ?>
 
-            <?php if (!$mensagem_status): ?>
+            <?php if (!$mensagem_status || !$sucesso): ?>
                 <h2 class="card-title text-center mb-4"> USER LOGIN</h2> 
 
                 <form action="login.php" method="POST">
@@ -104,7 +119,7 @@ if (isset($conexao) && !$sucesso) {
 
                 <div class="links text-center mt-3">
                     <a href="#" class="d-block text-muted">Esqueci a Senha</a>
-                    <a href="#" class="d-block text-muted">Criar uma nova conta</a>
+                    <a href="registrar.php" class="d-block text-muted">Criar uma nova conta</a>
                 </div>
             <?php endif; ?>
         </div>

@@ -1,18 +1,27 @@
 <?php
+// Arquivo: registrar.php (Versão Final com PDO)
 
 session_start();
-require_once 'conexao.php'; 
+require_once 'conexao.php'; // Garante que a variável $pdo está disponível
 
 $mensagem_status = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-
-    $usuario_novo = mysqli_real_escape_string($conexao, $_POST['username']);
-    $senha_nova = $_POST['password'];
-    $senha_confirmar = $_POST['confirm_password'];
-
+    // 1. VERIFICAÇÃO CRÍTICA DE CONEXÃO
+    // Se a conexão falhou em conexao.php, $pdo não existe
+    if (!isset($pdo)) {
+        $mensagem_status = "<h4 class='text-danger'>Erro crítico: Falha na conexão com o banco de dados.</h4>";
+        // Usa goto para pular o processamento e ir direto para a exibição HTML
+        goto exibir_html; 
+    }
     
+    // 2. Coletar e limpar os dados
+    $usuario_novo = trim($_POST['username'] ?? '');
+    $senha_nova = $_POST['password'] ?? '';
+    $senha_confirmar = $_POST['confirm_password'] ?? '';
+    
+    // 3. Validação básica
     if (empty($usuario_novo) || empty($senha_nova) || empty($senha_confirmar)) {
         $mensagem_status = "<h4 class='text-danger'>Preencha todos os campos.</h4>";
     } elseif ($senha_nova !== $senha_confirmar) {
@@ -21,45 +30,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mensagem_status = "<h4 class='text-danger'>A senha deve ter pelo menos 6 caracteres.</h4>";
     } else {
         
-       
-        $sql_check = "SELECT id FROM usuarios WHERE username = '$usuario_novo'";
-        $resultado_check = mysqli_query($conexao, $sql_check);
-        
-        if (mysqli_num_rows($resultado_check) > 0) {
-            $mensagem_status = "<h4 class='text-danger'>Usuário '$usuario_novo' já existe.</h4>";
-        } else {
+        try {
+            // 4. Verifica se o usuário já existe (PDO)
+            $sql_check = "SELECT id FROM usuarios WHERE usuario = ?";
+            $stmt_check = $pdo->prepare($sql_check);
+            $stmt_check->execute([$usuario_novo]);
             
-       
-            $hash_senha = password_hash($senha_nova, PASSWORD_DEFAULT);
-            
-            
-            $sql_insert = "INSERT INTO usuarios (username, password) VALUES (?, ?)";
-            
-            $stmt = mysqli_prepare($conexao, $sql_insert);
-            mysqli_stmt_bind_param($stmt, 'ss', $usuario_novo, $hash_senha);
-
-            if (mysqli_stmt_execute($stmt)) {
-                
-               
-                $mensagem_status = "<h4 class='text-success'>Cadastro efetuado com sucesso! Clique em 'Fazer Login' abaixo para entrar.</h4>";
-                
-              
-                header("Refresh: 3; URL=login.php"); 
-
+            if ($stmt_check->rowCount() > 0) {
+                $mensagem_status = "<h4 class='text-danger'>Usuário '$usuario_novo' já existe. Escolha outro.</h4>";
             } else {
-                $mensagem_status = "<h4 class='text-danger'>Erro ao cadastrar: " . mysqli_error($conexao) . "</h4>";
-            }
+                
+                // 5. Cria o hash seguro da senha (BCRYPT)
+                $hash_senha = password_hash($senha_nova, PASSWORD_DEFAULT);
+                
+                // 6. Insere o novo usuário (PDO)
+                
+                // NOTA: Sua tabela 'usuarios' exige 'email' e 'papel_id' (papel_id deve ser FOREIGN KEY)
+                // Usei um email padrão e papel_id=2 (Funcionário Vendas/Comum) como suposição. AJUSTE o ID do papel se necessário!
+                $email_padrao = $usuario_novo . '@petshop.com';
+                $papel_id_padrao = 2; // ID do papel para novos registros (Ex: 'FuncionarioVendas')
 
-            mysqli_stmt_close($stmt);
+                $sql_insert = "INSERT INTO usuarios (usuario, senha_hash, email, papel_id, ativo) 
+                               VALUES (?, ?, ?, ?, 1)";
+                
+                $stmt_insert = $pdo->prepare($sql_insert);
+                
+                $execucao_sucesso = $stmt_insert->execute([
+                    $usuario_novo, 
+                    $hash_senha, 
+                    $email_padrao, 
+                    $papel_id_padrao
+                ]);
+
+                if ($execucao_sucesso) {
+                    $mensagem_status = "<h4 class='text-success'>Cadastro efetuado com sucesso! Redirecionando para o login...</h4>";
+                    header("Refresh: 3; URL=login.php"); 
+                    // NÃO USE exit() aqui para permitir que o Refresh funcione enquanto a mensagem é exibida
+                    
+                } else {
+                    $mensagem_status = "<h4 class='text-danger'>Erro ao cadastrar. Falha na execução da query.</h4>";
+                }
+            }
+        
+        } catch (PDOException $e) {
+            // Captura erros de SQL ou de Prepared Statement
+            $mensagem_status = "<h4 class='text-danger'>Erro no servidor ao tentar registrar: " . $e->getMessage() . "</h4>";
         }
     }
-    mysqli_close($conexao);
 }
 
-
-if (isset($conexao) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-    mysqli_close($conexao);
-}
+// O ponto de exibição HTML após o processamento
+exibir_html: 
+// Não há mais necessidade de fechar a conexão no PDO
 ?>
 
 <!DOCTYPE html>
@@ -85,6 +107,10 @@ if (isset($conexao) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                 </div>
             <?php endif; ?>
 
+            <?php 
+            // Só exibe o formulário se o cadastro não foi um sucesso com redirecionamento ativo
+            if (strpos($mensagem_status, 'Cadastro efetuado com sucesso') === false): ?>
+
             <form action="registrar.php" method="POST">
                 <div class="mb-3 input-group">
                     <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
@@ -107,6 +133,8 @@ if (isset($conexao) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             <div class="links text-center mt-3">
                 <a href="login.php" class="d-block text-muted">Já tenho uma conta (Fazer Login)</a>
             </div>
+
+            <?php endif; ?>
         </div>
     </div> 
     
