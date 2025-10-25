@@ -26,3 +26,10 @@ quanto o de atributos das tabelas.
     - Compra e Entrada de Estoque
     - Realização de venda (Checkout)
     - Registro de Histórico Veterinário e Vacinas
+
+25-10-25:
+    Hoje eu estou finalizando toda a situação do banco de dados.
+    Realizei alterações e finalizei os seguintes modelos:
+    - Conceitual, com arquivo e imagem.
+    - Lógico, com arquivo e imagem.
+    - Físico
