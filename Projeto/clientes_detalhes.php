@@ -10,7 +10,7 @@ if (isset($conexao) && $conexao && $cliente_id) {
     try {
         // 1. Busca os detalhes do Cliente
         $sql_cliente = "SELECT id, nome, cpf, telefone, email, rua, numero, bairro, cep, complemento, data_nascimento 
-                        FROM clientes 
+                        FROM cliente
                         WHERE id = ? AND ativo = 1";
         $stmt_cliente = mysqli_prepare($conexao, $sql_cliente);
         mysqli_stmt_bind_param($stmt_cliente, "i", $cliente_id);
@@ -23,11 +23,11 @@ if (isset($conexao) && $conexao && $cliente_id) {
             // 2. Busca os Pets deste Cliente, usando JOIN para pegar o NOME DA RAÇA
             $sql_pets = "SELECT 
                             p.id, p.nome, p.data_nascimento, p.foto AS foto_path, 
-                            r.nome AS raca_nome -- <--- CORREÇÃO AQUI
+                            r.nome AS raca_nome 
                          FROM 
                             pet p
                          LEFT JOIN 
-                            racas r ON p.raca_id = r.id
+                            raca r ON p.raca_id = r.id
                          WHERE 
                             p.cliente_id = ? 
                          ORDER BY 
@@ -47,7 +47,8 @@ if (isset($conexao) && $conexao && $cliente_id) {
         error_log("Erro ao carregar detalhes do cliente/pets: " . $e->getMessage());
         echo '<div class="alert alert-danger">Erro ao carregar detalhes do cliente: ' . htmlspecialchars($e->getMessage()) . '</div>';
     }
-    // Não feche a conexão se ela for usada por scripts subsequentes, mas é boa prática fechar no final.
+    
+    // Fechar a conexão
     if (isset($conexao)) {
         mysqli_close($conexao);
     }
@@ -57,21 +58,49 @@ if (!$cliente) {
     echo '<div class="alert alert-danger">Cliente não encontrado ou ID inválido.</div>';
     exit();
 }
+
+// Funções auxiliares (incluídas para manter a consistência de formatação)
+function formatar_cpf($cpf) {
+    $cpf_limpo = preg_replace('/[^0-9]/', '', $cpf);
+    if (strlen($cpf_limpo) === 11) {
+        return substr($cpf_limpo, 0, 3) . '.' . substr($cpf_limpo, 3, 3) . '.' . substr($cpf_limpo, 6, 3) . '-' . substr($cpf_limpo, 9, 2);
+    }
+    return htmlspecialchars($cpf);
+}
+
+function formatar_telefone($tel) {
+    $tel_limpo = preg_replace('/[^0-9]/', '', $tel);
+    $len = strlen($tel_limpo);
+
+    if ($len === 11) {
+        return '(' . substr($tel_limpo, 0, 2) . ') ' . substr($tel_limpo, 2, 5) . '-' . substr($tel_limpo, 7, 4);
+    } elseif ($len === 10) {
+        return '(' . substr($tel_limpo, 0, 2) . ') ' . substr($tel_limpo, 2, 4) . '-' . substr($tel_limpo, 6, 4);
+    }
+    return htmlspecialchars($tel);
+}
 ?>
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-file-alt me-2"></i> Ficha do Cliente: <?php echo htmlspecialchars($cliente['nome']); ?></h2>
         
-        <div>
-            <a href="#" class="btn btn-primary item-menu-ajax me-2" data-pagina="clientes_editar.php?id=<?php echo $cliente_id; ?>">
+        <div class="d-flex flex-wrap gap-2">
+            
+            <a href="#" class="btn btn-warning item-menu-ajax" 
+               data-pagina="clientes_historico_completo.php?id=<?php echo $cliente_id; ?>" 
+               title="Ver histórico completo de atendimentos e compras">
+                <i class="fas fa-history me-1"></i> Ver Histórico Completo
+            </a>
+
+            <a href="#" class="btn btn-primary item-menu-ajax" data-pagina="clientes_atualizar.php?id=<?php echo $cliente_id; ?>">
                 <i class="fas fa-edit me-1"></i> Editar Cliente
             </a>
             <a href="#" class="btn btn-success item-menu-ajax" data-pagina="pets_cadastro.php?cliente_id=<?php echo $cliente_id; ?>">
                 <i class="fas fa-plus me-1"></i> Cadastrar Pet
             </a>
         </div>
-    </div>
+        </div>
 
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white">
@@ -79,8 +108,8 @@ if (!$cliente) {
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-4"><strong>CPF:</strong> <?php echo htmlspecialchars($cliente['cpf'] ?? 'N/A'); ?></div>
-                <div class="col-md-4"><strong>Telefone:</strong> <?php echo htmlspecialchars($cliente['telefone']); ?></div>
+                <div class="col-md-4"><strong>CPF:</strong> <?php echo formatar_cpf($cliente['cpf'] ?? 'N/A'); ?></div>
+                <div class="col-md-4"><strong>Telefone:</strong> <?php echo formatar_telefone($cliente['telefone']); ?></div>
                 <div class="col-md-4"><strong>Nascimento:</strong> <?php echo !empty($cliente['data_nascimento']) ? date('d/m/Y', strtotime($cliente['data_nascimento'])) : 'N/A'; ?></div>
             </div>
             <div class="row mt-2">
@@ -91,10 +120,10 @@ if (!$cliente) {
                     <strong>Endereço:</strong> 
                     <?php 
                         $endereco = htmlspecialchars($cliente['rua'] ?? '') . ', ' . 
-                                    htmlspecialchars($cliente['numero'] ?? '') . 
-                                    (empty($cliente['complemento']) ? '' : ' (' . htmlspecialchars($cliente['complemento']) . ')') . 
-                                    (empty($cliente['bairro']) ? '' : ' - ' . htmlspecialchars($cliente['bairro'])) . 
-                                    ' / CEP: ' . htmlspecialchars($cliente['cep'] ?? '');
+                                     htmlspecialchars($cliente['numero'] ?? '') . 
+                                     (empty($cliente['complemento']) ? '' : ' (' . htmlspecialchars($cliente['complemento']) . ')') . 
+                                     (empty($cliente['bairro']) ? '' : ' - ' . htmlspecialchars($cliente['bairro'])) . 
+                                     ' / CEP: ' . htmlspecialchars($cliente['cep'] ?? '');
                         echo !empty(trim($endereco, ', -/ ')) ? $endereco : 'Não cadastrado';
                     ?>
                 </div>

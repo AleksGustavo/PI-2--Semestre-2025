@@ -11,7 +11,7 @@ if (isset($conexao) && $conexao && $pet_id) {
         // 1. Obter informações básicas do Pet e Cliente
         $sql_info = "SELECT p.nome, c.nome AS cliente_nome, c.id AS cliente_id
                      FROM pet p
-                     JOIN clientes c ON p.cliente_id = c.id
+                     JOIN cliente c ON p.cliente_id = c.id
                      WHERE p.id = ?";
         $stmt_info = mysqli_prepare($conexao, $sql_info);
         mysqli_stmt_bind_param($stmt_info, "i", $pet_id);
@@ -26,7 +26,7 @@ if (isset($conexao) && $conexao && $pet_id) {
         }
 
         // 2. Obter o histórico de vacinas
-        $sql_vacinas = "SELECT * FROM carteira_vacinas WHERE pet_id = ? ORDER BY data_aplicacao DESC";
+        $sql_vacinas = "SELECT * FROM carteira_vacina WHERE pet_id = ? ORDER BY data_aplicacao DESC";
         $stmt_vacinas = mysqli_prepare($conexao, $sql_vacinas);
         mysqli_stmt_bind_param($stmt_vacinas, "i", $pet_id);
         mysqli_stmt_execute($stmt_vacinas);

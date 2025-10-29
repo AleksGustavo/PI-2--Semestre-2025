@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try {
             // AÇÃO 1: Atualizar o status do agendamento para 'concluido'
-            $sql_agendamento = "UPDATE agendamentos 
+            $sql_agendamento = "UPDATE agendamento
                                 SET status = 'concluido', funcionario_id = ?, updated_at = NOW() 
                                 WHERE id = ?";
             $stmt_agendamento = mysqli_prepare($conexao, $sql_agendamento);
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_close($stmt_agendamento);
 
             // AÇÃO 2: Inserir o registro na carteira_vacinas
-            $sql_vacina = "INSERT INTO carteira_vacinas (pet_id, nome_vacina, data_aplicacao, data_proxima, veterinario) 
+            $sql_vacina = "INSERT INTO carteira_vacina (pet_id, nome_vacina, data_aplicacao, data_proxima, veterinario) 
                            VALUES (?, ?, ?, ?, ?)";
             $stmt_vacina = mysqli_prepare($conexao, $sql_vacina);
             // i, s, s, s, s -> int, string, string, string, string

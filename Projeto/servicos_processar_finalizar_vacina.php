@@ -36,8 +36,8 @@ try {
 
     // 2. Busca o nome da vacina (que é o nome do serviço)
     $sql_detalhes = "SELECT s.nome AS nome_vacina
-                     FROM agendamentos a
-                     JOIN servicos s ON a.servico_id = s.id
+                     FROM agendamento a
+                     JOIN servico s ON a.servico_id = s.id
                      WHERE a.id = ?";
     $stmt_detalhes = mysqli_prepare($conexao, $sql_detalhes);
     mysqli_stmt_bind_param($stmt_detalhes, "i", $agendamento_id);
@@ -55,7 +55,7 @@ try {
     
     // 3. Registra na Tabela carteira_vacinas
     // NOTA: O campo 'data_proxima' está NULL, você pode adicionar a lógica de cálculo aqui.
-    $sql_carteira = "INSERT INTO carteira_vacinas (pet_id, nome_vacina, data_aplicacao, data_proxima, created_at)
+    $sql_carteira = "INSERT INTO carteira_vacina (pet_id, nome_vacina, data_aplicacao, data_proxima, created_at)
                      VALUES (?, ?, ?, NULL, NOW())";
     $stmt_carteira = mysqli_prepare($conexao, $sql_carteira);
     mysqli_stmt_bind_param($stmt_carteira, "iss", $pet_id, $nome_vacina, $data_aplicacao);
@@ -67,7 +67,7 @@ try {
     
     // 4. Atualiza o status do Agendamento para 'concluido'
     $status_concluido = 'concluido';
-    $sql_update = "UPDATE agendamentos SET status = ?, updated_at = NOW() WHERE id = ?";
+    $sql_update = "UPDATE agendamento SET status = ?, updated_at = NOW() WHERE id = ?";
     $stmt_update = mysqli_prepare($conexao, $sql_update);
     mysqli_stmt_bind_param($stmt_update, "si", $status_concluido, $agendamento_id);
     

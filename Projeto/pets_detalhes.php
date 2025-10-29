@@ -1,6 +1,6 @@
 <?php
 // Arquivo: pets_detalhes.php - Ficha Detalhada do Pet
-require_once 'conexao.php'; // Garante a conexão com o banco de dados
+require_once 'conexao.php'; // Garante a conexão com o banco de dados ($conexao - mysqli)
 
 $pet_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $pet = null;
@@ -12,22 +12,29 @@ $URL_UPLOADS = 'uploads/fotos_pets/';
 $URL_PLACEHOLDER = 'assets/img/pet_placeholder.png'; // Caminho para uma imagem padrão
 // ==================================================================================
 
-if (isset($conexao) && $conexao && $pet_id) {
+// Verifica se a conexão mysqli está ativa.
+if (empty($conexao)) {
+    echo '<div class="alert alert-danger">Erro crítico: Conexão mysqli indisponível.</div>';
+    exit();
+}
+
+if ($pet_id) {
     try {
         // 1. Busca os detalhes do Pet (INCLUINDO JOIN COM RACAS PARA PEGAR O NOME) e do Dono
         $sql_pet = "SELECT 
                         p.id, p.nome, p.data_nascimento, p.foto AS foto_path, p.castrado,
-                        r.nome AS raca_nome, -- <--- CORREÇÃO AQUI: PEGANDO O NOME DA RAÇA DA TABELA 'racas'
+                        r.nome AS raca_nome, 
                         c.id AS cliente_id, c.nome AS cliente_nome, c.telefone AS cliente_telefone
                     FROM 
                         pet p
                     JOIN 
-                        clientes c ON p.cliente_id = c.id
-                    LEFT JOIN -- LEFT JOIN para pets sem raça_id cadastrada (NULL)
-                        racas r ON p.raca_id = r.id
+                        cliente c ON p.cliente_id = c.id
+                    LEFT JOIN 
+                        raca r ON p.raca_id = r.id
                     WHERE 
                         p.id = ?";
                         
+        // Usa prepared statement mysqli
         $stmt_pet = mysqli_prepare($conexao, $sql_pet);
         mysqli_stmt_bind_param($stmt_pet, "i", $pet_id);
         mysqli_stmt_execute($stmt_pet);
@@ -36,7 +43,7 @@ if (isset($conexao) && $conexao && $pet_id) {
         mysqli_stmt_close($stmt_pet);
 
         // 2. Verifica se o Pet tem vacinas na carteira
-        $sql_vacina = "SELECT COUNT(id) AS total_vacinas FROM carteira_vacinas WHERE pet_id = ?";
+        $sql_vacina = "SELECT COUNT(id) AS total_vacinas FROM carteira_vacina WHERE pet_id = ?";
         $stmt_vacina = mysqli_prepare($conexao, $sql_vacina);
         mysqli_stmt_bind_param($stmt_vacina, "i", $pet_id);
         mysqli_stmt_execute($stmt_vacina);
@@ -47,14 +54,10 @@ if (isset($conexao) && $conexao && $pet_id) {
         $total_vacinas = $dados_vacina['total_vacinas'];
         
     } catch (Exception $e) {
-        // Agora, se houver erro, loga e exibe uma mensagem genérica ou o erro para debug
         error_log("Erro ao carregar detalhes do Pet: " . $e->getMessage());
         echo '<div class="alert alert-danger">Erro crítico ao carregar a ficha do Pet. Tente novamente.</div>';
         $pet = null;
     }
-    // Não feche a conexão aqui se você for reutilizá-la em outros arquivos incluídos.
-    // Se este é o final do script, pode fechar.
-    // mysqli_close($conexao); 
 }
 
 if (!$pet) {
@@ -73,21 +76,36 @@ $vacina_class = $is_vacinado ? 'badge bg-primary' : 'badge bg-secondary';
 
 // Determina o caminho da foto
 $foto_path = $pet['foto_path'] ?? '';
-// O caminho da foto no banco é o nome do arquivo. Precisamos do caminho completo.
 $foto_url = (!empty($foto_path) && file_exists($URL_UPLOADS . $foto_path)) 
-            ? $URL_UPLOADS . $foto_path
-            : $URL_PLACEHOLDER;
+             ? $URL_UPLOADS . $foto_path
+             : $URL_PLACEHOLDER;
 ?>
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-paw me-2"></i> Ficha do Pet: <?php echo htmlspecialchars($pet['nome']); ?></h2>
         
-        <a href="#" class="btn btn-warning item-menu-ajax" 
-            data-pagina="pets_carteira_vacinas.php?pet_id=<?php echo $pet_id; ?>" 
-            title="Ver Histórico de Vacinas">
-            <i class="fas fa-file-invoice me-1"></i> Ver Carteira de Vacinas
-        </a>
+        <div class="btn-group" role="group" aria-label="Ações do Pet">
+            
+            <a href="#" class="btn btn-danger item-menu-ajax" 
+                data-pagina="pets_processar.php?acao=excluir&id=<?php echo $pet_id; ?>" 
+                data-confirmacao="Tem certeza que deseja EXCLUIR este pet e todos os seus registros (vacinas, agendamentos, etc.)? Esta ação é irreversível." 
+                title="Excluir o Pet permanentemente">
+                <i class="fas fa-trash-alt me-1"></i> Excluir Pet
+            </a>
+            
+            <a href="#" class="btn btn-primary item-menu-ajax" 
+                data-pagina="pets_editar.php?id=<?php echo $pet_id; ?>" 
+                title="Editar as informações do Pet">
+                <i class="fas fa-edit me-1"></i> Atualizar Pet
+            </a>
+            
+            <a href="#" class="btn btn-warning item-menu-ajax" 
+                data-pagina="pets_carteira_vacinas.php?pet_id=<?php echo $pet_id; ?>" 
+                title="Ver Histórico de Vacinas">
+                <i class="fas fa-file-invoice me-1"></i> Ver Carteira de Vacinas
+            </a>
+        </div>
     </div>
 
     <div class="card shadow-lg mb-4">
@@ -130,3 +148,50 @@ $foto_url = (!empty($foto_path) && file_exists($URL_UPLOADS . $foto_path))
         </div>
     </div>
 </div>
+
+<script>
+// ESTE BLOCO DE CÓDIGO É NECESSÁRIO PARA GARANTIR QUE OS BOTÕES DENTRO DESTE CONTEÚDO 
+// CARREGADO VIA AJAX FUNCIONEM CORRETAMENTE.
+
+$(document).ready(function() {
+    // 1. Replicar a função de carregamento AJAX, se ela não estiver no escopo global
+    if (typeof carregarConteudo === 'undefined') {
+        window.carregarConteudo = function(paginaUrl) {
+            // Esta é uma SIMULAÇÃO de como seu sistema principal deve carregar o conteúdo.
+            // VOCÊ PODE PRECISAR AJUSTAR O SELETOR DA DIV PRINCIPAL (ex: '#conteudo-principal')
+            $('#conteudo-principal').html('<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-2x"></i> Carregando...</div>');
+            $('#conteudo-principal').load(paginaUrl, function(response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Erro ao carregar página: ";
+                    $('#conteudo-principal').html('<div class="alert alert-danger">' + msg + xhr.status + " " + xhr.statusText + '</div>');
+                }
+            });
+        };
+    }
+
+    // 2. Aplicar a DELEGAÇÃO DE EVENTOS para os links AJAX
+    // Isso garante que mesmo os elementos carregados dinamicamente (como esta página) 
+    // tenham a funcionalidade de clique AJAX.
+    $('body').off('click', '.item-menu-ajax').on('click', '.item-menu-ajax', function(e) {
+        e.preventDefault();
+        var pagina = $(this).data('pagina');
+        var confirmacao = $(this).data('confirmacao'); // Pega a mensagem de confirmação
+
+        if (confirmacao) {
+            // Se houver mensagem de confirmação (para o botão Excluir)
+            if (confirm(confirmacao)) {
+                carregarConteudo(pagina);
+            }
+        } else {
+            // Para botões normais (Atualizar, Ver Carteira)
+            if (pagina) {
+                carregarConteudo(pagina);
+            }
+        }
+    });
+
+    // Chama o evento de clique uma vez para garantir que o script esteja no escopo
+    // (Mesmo que o código acima já use delegação de evento, é uma boa prática
+    // garantir que o DOM esteja pronto para o script ser executado.)
+});
+</script>

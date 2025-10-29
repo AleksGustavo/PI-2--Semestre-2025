@@ -1,5 +1,4 @@
 <?php
-// Arquivo: produtos_processar.php (Processamento AJAX de Cadastro)
 
 // 1. Configura o cabeçalho para JSON
 header('Content-Type: application/json');
@@ -46,7 +45,7 @@ try {
     }
     
     // 5. Inserção no Banco de Dados (PDO e Prepared Statement)
-    $sql = "INSERT INTO produtos (nome, descricao, categoria_id, fornecedor_padrao_id, preco_custo, preco_venda, quantidade_estoque, estoque_minimo, codigo_barras, ativo) 
+    $sql = "INSERT INTO produto (nome, descricao, categoria_id, fornecedor_padrao_id, preco_custo, preco_venda, quantidade_estoque, estoque_minimo, codigo_barras, ativo) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
             
     $stmt = $pdo->prepare($sql);

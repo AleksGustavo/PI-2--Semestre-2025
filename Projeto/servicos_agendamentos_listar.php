@@ -1,5 +1,4 @@
 <?php
-// Arquivo: servicos_agendamentos_listar.php - Lista os Agendamentos
 require_once 'conexao.php'; 
 
 // ==============================================================================
@@ -12,16 +11,7 @@ $agendamentos = [];
 $erro_sql = ''; 
 
 if (isset($conexao) && $conexao) {
-    // A SQL CORRIGIDA: JOINs encadeados (agendamentos -> pet -> clientes)
-  // Arquivo: servicos_agendamentos_listar.php 
-
-// ... (Resto do PHP)
-
-if (isset($conexao) && $conexao) {
-    // A SQL CORRIGIDA E LIMPA: JOINs encadeados
-// Cerca da linha 36 (onde o erro anterior estava)
-if (isset($conexao) && $conexao) {
-    // A SQL CORRIGIDA E LIMPA: JOINs encadeados
+    // Busca todos os agendamentos com JOINs para obter nome do Cliente, Pet e Serviço.
     $sql = "SELECT 
                 a.id AS agendamento_id, 
                 a.data_agendamento, 
@@ -32,23 +22,16 @@ if (isset($conexao) && $conexao) {
                 p.nome AS pet_nome,
                 s.nome AS servico_nome 
             FROM 
-                agendamentos a 
+                agendamento a 
             JOIN 
                 pet p ON a.pet_id = p.id
             JOIN 
-                clientes c ON p.cliente_id = c.id
+                cliente c ON p.cliente_id = c.id
             JOIN
-                servicos s ON a.servico_id = s.id
+                servico s ON a.servico_id = s.id
             ORDER BY 
-                a.data_agendamento DESC"; // <--- AQUI DEVE HAVER AS ASPAS E O PONTO E VÍRGULA!
-                                          // Se a linha 45 for esta, o problema está acima.
-                    
-    $result = mysqli_query($conexao, $sql);
-    
-// ...
-// ... (Resto do PHP)
                 a.data_agendamento DESC"; 
-                    
+                
     $result = mysqli_query($conexao, $sql);
     
     if ($result) {

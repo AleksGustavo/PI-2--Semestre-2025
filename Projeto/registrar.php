@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         try {
             // 4. Verifica se o usuário já existe (PDO)
-            $sql_check = "SELECT id FROM usuarios WHERE usuario = ?";
+            $sql_check = "SELECT id FROM usuario WHERE usuario = ?";
             $stmt_check = $pdo->prepare($sql_check);
             $stmt_check->execute([$usuario_novo]);
             
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $email_padrao = $usuario_novo . '@petshop.com';
                 $papel_id_padrao = 2; // ID do papel para novos registros (Ex: 'FuncionarioVendas')
 
-                $sql_insert = "INSERT INTO usuarios (usuario, senha_hash, email, papel_id, ativo) 
+                $sql_insert = "INSERT INTO usuario (usuario, senha_hash, email, papel_id, ativo) 
                                VALUES (?, ?, ?, ?, 1)";
                 
                 $stmt_insert = $pdo->prepare($sql_insert);

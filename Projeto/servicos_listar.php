@@ -8,7 +8,7 @@ $erro_sql = '';
 
 // SQL para buscar todos os serviços
 $sql_servicos = "SELECT id, nome, descricao, preco, duracao_media, ativo 
-                 FROM servicos 
+                 FROM servico
                  ORDER BY nome ASC";
 
 $result_servicos = mysqli_query($conexao, $sql_servicos);

@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 3. Consulta Segura (Prepared Statement)
     // ATENÇÃO: Confirme se as colunas são 'usuario' e 'senha_hash'
-    $sql = "SELECT id, usuario, senha_hash FROM usuarios WHERE usuario = ?";
+    $sql = "SELECT id, usuario, senha_hash FROM usuario WHERE usuario = ?";
     
     try {
         $stmt = $pdo->prepare($sql);

@@ -2,7 +2,7 @@
 // Arquivo: servicos_processar_vacina.php
 header('Content-Type: application/json');
 
-require_once 'conexao.php'; // Inclui a conexão ($conexao - MySQLi)
+require_once 'conexao.php';
 
 $response = [
     'success' => false,
@@ -43,7 +43,7 @@ $observacoes = empty($observacoes) ? null : $observacoes;
 
 // 3. Inserção no Banco de Dados (MySQLi Prepared Statement)
 try {
-    $sql = "INSERT INTO carteira_vacinas (pet_id, nome_vacina, data_aplicacao, data_proxima, veterinario, observacoes, created_at)
+    $sql = "INSERT INTO carteira_vacina (pet_id, nome_vacina, data_aplicacao, data_proxima, veterinario, observacoes, created_at)
             VALUES (?, ?, ?, ?, ?, ?, NOW())";
             
     $stmt = mysqli_prepare($conexao, $sql);

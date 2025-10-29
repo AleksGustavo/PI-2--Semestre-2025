@@ -49,7 +49,7 @@ try {
     
     // 5. Inserção no Banco de Dados (MySQLi e Prepared Statement)
     
-    $sql = "INSERT INTO clientes (nome, cpf, telefone, cep, rua, numero, bairro, complemento, data_nascimento, created_at) 
+    $sql = "INSERT INTO cliente (nome, cpf, telefone, cep, rua, numero, bairro, complemento, data_nascimento, created_at) 
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"; 
              
     $stmt = mysqli_prepare($conexao, $sql);

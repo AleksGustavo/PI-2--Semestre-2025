@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($conexao) {
         try {
             // 2. Prepara a inserção na tabela carteira_vacinas
-            $sql = "INSERT INTO carteira_vacinas (pet_id, nome_vacina, data_aplicacao, data_proxima, veterinario, observacoes) 
+            $sql = "INSERT INTO carteira_vacina (pet_id, nome_vacina, data_aplicacao, data_proxima, veterinario, observacoes) 
                     VALUES (?, ?, ?, ?, ?, ?)";
             
             $stmt = mysqli_prepare($conexao, $sql);

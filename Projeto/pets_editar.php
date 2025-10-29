@@ -23,15 +23,14 @@ if (!$pet_id) {
 }
 
 try {
-    // 1. Carrega os dados do Pet
-    // **CORREÇÃO: REMOVIDO 'c.sobrenome' da seleção.**
+    // 1. Carrega os dados do Pet - AGORA COM P.PORTE DEFINITIVO NA QUERY
     $stmt_pet = $pdo->prepare("
         SELECT 
             p.id, p.cliente_id, p.nome, p.data_nascimento, p.peso, p.castrado, p.vacinado, 
-            p.especie_id, p.raca_id, p.foto, 
-            c.nome AS nome_cliente -- Apenas 'nome' é selecionado
+            p.especie_id, p.raca_id, p.foto, p.porte, 
+            c.nome AS nome_cliente 
         FROM pet p
-        JOIN clientes c ON p.cliente_id = c.id
+        JOIN cliente c ON p.cliente_id = c.id
         WHERE p.id = ?
     ");
     $stmt_pet->execute([$pet_id]);
@@ -42,19 +41,20 @@ try {
         exit();
     }
     
-    // **CORREÇÃO: Usando apenas o campo 'nome_cliente' que já contém o nome completo.**
     $nome_cliente = htmlspecialchars($pet['nome_cliente']);
+    // Garante que o porte seja lido corretamente ou seja string vazia
+    $porte_atual = $pet['porte'] ?? ''; 
 
     // 2. Busca lista de espécies e raças
-    $stmt_especies = $pdo->query("SELECT id, nome FROM especies ORDER BY nome ASC");
+    $stmt_especies = $pdo->query("SELECT id, nome FROM especie ORDER BY nome ASC");
     $especies = $stmt_especies->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmt_racas = $pdo->query("SELECT id, nome FROM racas ORDER BY nome ASC");
+    $stmt_racas = $pdo->query("SELECT id, nome FROM raca ORDER BY nome ASC");
     $racas = $stmt_racas->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
     error_log("Erro ao carregar dados do pet para edição: " . $e->getMessage());
-    echo '<div class="alert alert-danger">Erro ao carregar dados do pet: ' . htmlspecialchars($e->getMessage()) . '</div>';
+    echo '<div class="alert alert-danger">Erro ao carregar dados do pet. Por favor, verifique a conexão e a estrutura do banco de dados.</div>';
     exit();
 }
 ?>
@@ -121,6 +121,18 @@ try {
                 </div>
             </div>
 
+            <div class="row" id="pet-porte-row" style="display:none;">
+                <div class="col-md-4 mb-3">
+                    <label for="porte" class="form-label">Porte (Apenas para Cães)</label>
+                    <select id="porte" name="porte" class="form-select" disabled>
+                        <option value="">Selecione o Porte</option>
+                        <option value="Pequeno" <?= ($porte_atual == 'Pequeno') ? 'selected' : '' ?>>Pequeno</option>
+                        <option value="Medio" <?= ($porte_atual == 'Medio') ? 'selected' : '' ?>>Médio</option>
+                        <option value="Grande" <?= ($porte_atual == 'Grande') ? 'selected' : '' ?>>Grande</option>
+                    </select>
+                    <div class="form-text">Preencha se for Cachorro.</div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <label for="peso" class="form-label">Peso (Kg)</label>
@@ -167,3 +179,33 @@ try {
         </form>
     </div>
 </div>
+
+<script>
+$(document).ready(function() {
+    // Lógica para controle de visibilidade e obrigatoriedade do campo 'Porte'
+    function togglePorteField() {
+        // ASSUNÇÃO: O ID da Espécie "Cachorro" é 1.
+        const especieId = $('#especie_id').val();
+        const porteRow = $('#pet-porte-row');
+        const porteSelect = $('#porte');
+
+        if (especieId === '1') { 
+            // Se for Cachorro, torna o campo visível e habilitado.
+            porteRow.show();
+            porteSelect.prop('disabled', false);
+            // REMOVIDO: porteSelect.prop('required', true); 
+        } else {
+            // Para outras espécies, esconde e desabilita.
+            porteRow.hide();
+            porteSelect.prop('disabled', true);
+            // REMOVIDO: porteSelect.prop('required', false);
+        }
+    }
+
+    // Aplica a lógica quando a espécie muda
+    $('#especie_id').on('change', togglePorteField); 
+    
+    // Aplica a lógica na inicialização para exibir o estado correto do pet atual
+    togglePorteField(); 
+});
+</script>

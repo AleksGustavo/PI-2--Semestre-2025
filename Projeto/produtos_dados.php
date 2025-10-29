@@ -9,7 +9,7 @@ require_once 'conexao.php';
 
 function get_categorias($pdo) {
     try {
-        $stmt = $pdo->query("SELECT id, nome FROM categorias_produtos ORDER BY nome");
+        $stmt = $pdo->query("SELECT id, nome FROM categorias_produto ORDER BY nome");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         // Em caso de erro (ex: tabela categorias_produtos não existe)
@@ -21,7 +21,7 @@ function get_categorias($pdo) {
 function get_fornecedores($pdo) {
     try {
         // Usamos nome_fantasia (ou razao_social) conforme sua estrutura
-        $stmt = $pdo->query("SELECT id, nome_fantasia FROM fornecedores WHERE ativo = 1 ORDER BY nome_fantasia");
+        $stmt = $pdo->query("SELECT id, nome_fantasia FROM fornecedor WHERE ativo = 1 ORDER BY nome_fantasia");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         error_log("Erro ao buscar fornecedores: " . $e->getMessage());

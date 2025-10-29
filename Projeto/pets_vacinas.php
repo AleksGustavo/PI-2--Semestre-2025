@@ -13,7 +13,7 @@ if (!$pet_id) {
 
 try {
     // 1. Carrega dados básicos do Pet
-    $stmt_pet = $pdo->prepare("SELECT p.nome AS nome_pet, c.nome AS nome_cliente FROM pet p JOIN clientes c ON p.cliente_id = c.id WHERE p.id = ?");
+    $stmt_pet = $pdo->prepare("SELECT p.nome AS nome_pet, c.nome AS nome_cliente FROM pet p JOIN cliente c ON p.cliente_id = c.id WHERE p.id = ?");
     $stmt_pet->execute([$pet_id]);
     $pet = $stmt_pet->fetch(PDO::FETCH_ASSOC);
 
