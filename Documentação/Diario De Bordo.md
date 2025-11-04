@@ -31,3 +31,17 @@ Marcos:
    Hoje, adiantei bastente o back-end do nosso PI, coloquei as funcionalidades de cadastra clientes, listar, excluir e editar 
    e fiz isso também com produtos, fiz um Ajax, para quando uma pessoa quiser usar as funciolaidades da sidebar não ficar trocando de tela, e sim só mudará o contéudo da dashbord
    agilizando o processo, e por fim coloquei alguns cards para a pessoa ter um acesso mais rapido quando ela quiser e estiver com pressa, além de adicionar a buscar pelo cliente pelo nome,cpf ou sobrenome.
+
+
+17/10
+Marcos :
+   Hoje eu crie alguns arquivos que achei interessante, e isso avançou muito nosso projeto que ja está cadastrando pet, add pet, a carteira de vacina do pet ja está criada.
+
+
+25/10
+Marcos: 
+   Hoje fomos tentar adicionar uma foto na funcionalidade do pet, mais infelizmente deu alguns erros,
+   mas consiguimos adiantar um pouquinho nosso back-end.
+
+28/10
+  Hoje adicionei as funcionalidades de sair (logout) e volta para a tela login, estamos na reta final.

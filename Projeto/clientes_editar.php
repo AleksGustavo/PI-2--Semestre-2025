@@ -1,19 +1,21 @@
 <?php
-// Arquivo: clientes_atualizar.php
+// Arquivo: clientes_editar.php
 // Apenas o conteúdo HTML que será injetado pelo AJAX.
 
 // 1. INCLUIR CONEXÃO
 require_once 'conexao.php'; // Certifique-se de que este caminho está correto
 
 // 2. OBTER O ID DO CLIENTE
-$cliente_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+// Assume que o ID é passado como ?id=... na URL.
+$cliente_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT); 
 $cliente_db_data = null;
 $cliente = [];
 
 if ($cliente_id && isset($conexao)) {
     // 3. BUSCAR DADOS DO CLIENTE NO BANCO DE DADOS
     try {
-        $sql = "SELECT id, nome AS nome_completo, cpf, telefone, data_nascimento, cep, rua, numero, bairro, complemento
+        // CORREÇÃO AQUI: Usando 'nome' (real) em vez de 'nome_completo'
+        $sql = "SELECT id, nome, cpf, telefone, data_nascimento, cep, rua, numero, bairro, complemento
                 FROM cliente
                 WHERE id = ?";
         
@@ -27,8 +29,9 @@ if ($cliente_id && isset($conexao)) {
         // Se o cliente foi encontrado, processa os dados
         if ($cliente_db_data) {
             
-            // Lógica para dividir o 'nome_completo' em 'nome' e 'sobrenome'
-            $nome_partes = explode(' ', $cliente_db_data['nome_completo'], 2);
+            // CORREÇÃO AQUI: Usando $cliente_db_data['nome']
+            // Lógica para dividir o 'nome' (real) em 'nome' e 'sobrenome'
+            $nome_partes = explode(' ', $cliente_db_data['nome'], 2);
             $nome = $nome_partes[0] ?? '';
             $sobrenome = $nome_partes[1] ?? '';
 
@@ -41,23 +44,19 @@ if ($cliente_id && isset($conexao)) {
             ]);
         }
     } catch (Exception $e) {
-        // Em caso de erro de DB, apenas loga e deixa $cliente vazio
         error_log("Erro ao carregar cliente para edição: " . $e->getMessage());
-    } finally {
-         // Fecha a conexão (Pode ser removido se o AJAX for fechado fora)
-         // mysqli_close($conexao); 
     }
 }
 
-// Verifica se o cliente foi carregado. Se não, exibe uma mensagem de erro simples.
+// Verifica se o cliente foi carregado.
 if (!$cliente_db_data) {
-    echo '<div class="alert alert-danger">Erro: Cliente não encontrado ou ID inválido.</div>';
-    // Você pode colocar um 'exit();' aqui se não quiser renderizar o resto do HTML.
+    echo '<div class="alert alert-danger">Erro: Cliente não encontrado ou ID inválido. ID tentado: ' . htmlspecialchars($cliente_id) . '</div>';
+    exit(); // Sai para não renderizar o formulário vazio
 }
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2><i class="fas fa-user-edit me-2"></i> Atualizar Cadastro do Cliente</h2>
+    <h2><i class="fas fa-user-edit me-2"></i> Atualizar Cadastro do Cliente ID: <?php echo htmlspecialchars($cliente['id']); ?></h2>
     
     <div>
         <a href="#" class="btn btn-secondary item-menu-ajax btn-sm" data-pagina="clientes_listar.php">

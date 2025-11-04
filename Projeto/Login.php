@@ -35,73 +35,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $hash_senha_bd = $usuario['senha_hash']; 
             
-            // 5. Verifica a Senha (USANDO BCRYPT - O método seguro de password_verify)
-            // Este é o método que corresponde ao password_hash do registrar.php
-            if (password_verify($senha_digitada, $hash_senha_bd)) { 
-            
-                $sucesso = true;
+            // 5. Verifica a senha
+            // Use password_verify() para senhas criptografadas com bcrypt
+            if (password_verify($senha_digitada, $hash_senha_bd)) {
                 
-                // 6. Configura a Sessão
+                // Sucesso no login
                 $_SESSION['logado'] = true;
-                $_SESSION['user_id'] = $usuario['id']; 
-                $_SESSION['username'] = $usuario['usuario']; 
+                $_SESSION['user_id'] = $usuario['id'];
+                $_SESSION['username'] = $usuario['usuario'];
                 
-                // 7. Redireciona
-                header("Location: dashboard.php"); 
-                exit(); 
+                $mensagem_status = "<h2 class='text-success'>Login efetuado com sucesso!</h2>";
+                $sucesso = true;
+                header('Refresh: 2; URL=dashboard.php'); // Redireciona após 2 segundos
                 
             } else {
                 // Senha incorreta
-                $mensagem_status = "<h2 class='text-danger'>Usuário ou senha incorretos!</h2>";
+                $mensagem_status = "<div class='alert alert-danger mt-3'>Usuário ou senha inválidos.</div>";
             }
         } else {
             // Usuário não encontrado
-            $mensagem_status = "<h2 class='text-danger'>Usuário ou senha incorretos!</h2>";
+            $mensagem_status = "<div class='alert alert-danger mt-3'>Usuário ou senha inválidos.</div>";
         }
-    
+
     } catch (PDOException $e) {
-        // Erro de Banco de Dados
-        $mensagem_status = "<h2 class='text-danger'>Erro no servidor (BD). Tente novamente.</h2>";
-        // O ideal é logar $e->getMessage() para debug
+        // Erro na consulta SQL
+        $mensagem_status = "<div class='alert alert-danger mt-3'>Erro interno: " . $e->getMessage() . "</div>";
     }
 }
 
-exibir_html: 
+exibir_html:
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistema</title>
-    
+    <title>Login - PetShop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    
-    <link rel="stylesheet" href="css/Style.css"> 
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
+    <style>
+        body {
+            background-color: #f8f9fa; /* Fundo cinza claro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* ALTERAÇÃO PRINCIPAL: CARD MAIS LARGO */
+        .login-card {
+            max-width: 500px; /* Largura aumentada para 500px */
+            width: 90%; 
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .login-btn {
+            background-color: #0d6efd; 
+            border-color: #0d6efd;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #0b5ed7; 
+            border-color: #0b5ed7;
+        }
+    </style>
 </head>
-<body class="bg-dark d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card p-4 shadow-lg login-container">
+<body>
+
+    <div class="card login-card">
         <div class="card-body">
             
-            <?php if ($mensagem_status): ?>
-                <div class="status-message text-center mb-4">
+            <?php if ($mensagem_status && !$sucesso): ?>
+                <?php echo $mensagem_status; ?>
+            <?php elseif ($sucesso): ?>
+                <div class="text-center">
                     <?php echo $mensagem_status; ?>
+                    <p class="mt-3">Você será redirecionado(a) em breve...</p>
+                    <i class="fas fa-spinner fa-spin fa-2x text-success"></i>
                 </div>
-                
-                <?php if (!$sucesso): ?>
-                    <div class="text-center mt-3">
-                        <a href="login.php" class="btn btn-secondary w-100">Tentar Novamente</a>
-                    </div>
-                <?php endif; ?>
-                
             <?php endif; ?>
-
+            
             <?php if (!$mensagem_status || !$sucesso): ?>
-                <h2 class="card-title text-center mb-4"> USER LOGIN</h2> 
+                
+                <div class="text-center mb-4">
+                    <img src="Logo.jpeg" 
+                         alt="Logo PetShop" 
+                         class="img-fluid rounded-circle mb-3" 
+                         style="max-width: 120px; border: 3px solid #0d6efd;"> 
+                         
+                    <h2 class="card-title">USER LOGIN</h2> 
+                </div>
 
                 <form action="login.php" method="POST">
                     <div class="mb-3 input-group">

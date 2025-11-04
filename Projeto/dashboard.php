@@ -190,14 +190,16 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
     </div>
 </div>
 
-<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 <script>
-    
-    // FUNÇÃO QUE APLICA AS MÁSCARAS E VALIDAÇÕES
+    // FUNÇÃO QUE APLICA AS MÁSCARAS E VALIDAÇÕES (Chamada após cada carregamento AJAX)
     function inicializarMascarasEValidacoes() {
         
         // 1. Aplicação das Máscaras (jQuery Mask Plugin)
@@ -306,13 +308,12 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
             var $this = $(this);
             var pagina = $this.data('pagina');
 
-            // Chamamos carregarConteudo, ele se encarrega de setar a classe 'active'
             if (pagina) {
                 carregarConteudo(pagina);
             }
         });
 
-        // 2. LÓGICA DE ENVIO DE FORMULÁRIOS DE CADASTRO/PROCESSAMENTO (Mantida inalterada)
+        // 2. LÓGICA DE ENVIO DE FORMULÁRIOS DE CADASTRO/PROCESSAMENTO
         $(document).on('submit', '#form-cadastro-cliente, #form-cadastro-produto, #form-cadastro-pet, #form-agendar-servico, #form-registrar-vacina, #form-pdv', function(e) {
             e.preventDefault(); 
             
@@ -321,7 +322,6 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
             var dados = form.serialize();
             var formId = form.attr('id');
             
-            // Determina a página de listagem para redirecionamento após o sucesso
             var paginaRedirecionamento = 'home.php';
             if (formId === 'form-cadastro-cliente' || formId === 'form-cadastro-pet') {
                 paginaRedirecionamento = 'clientes_listar.php';
@@ -330,7 +330,7 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
             } else if (formId === 'form-agendar-servico' || formId === 'form-registrar-vacina') {
                 paginaRedirecionamento = 'servicos_agendamentos_listar.php'; 
             } else if (formId === 'form-pdv') {
-                paginaRedirecionamento = 'vendas_pdv.php'; // Mantém na página do PDV ou redireciona para uma confirmação
+                paginaRedirecionamento = 'vendas_pdv.php'; 
             }
             
             $('#status-message-area').html('<div class="alert alert-info text-center"><i class="fas fa-spinner fa-spin me-2"></i> Enviando dados...</div>');
@@ -364,7 +364,7 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
             });
         });
 
-        // 3. LÓGICA DE BUSCA RÁPIDA DE CLIENTES (Mantida inalterada)
+        // 3. LÓGICA DE BUSCA RÁPIDA DE CLIENTES
         $(document).on('submit', '#form-busca-cliente-rapida', function(e) {
             e.preventDefault(); 
             
@@ -389,7 +389,7 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
             });
         });
 
-        // 4. MONITORA O BOTÃO VOLTAR/AVANÇAR (API HISTORY) (Mantida inalterada)
+        // 4. MONITORA O BOTÃO VOLTAR/AVANÇAR (API HISTORY)
         window.onpopstate = function(event) {
             if (event.state && event.state.pagina) {
                 carregarConteudo(event.state.pagina, false); 
@@ -398,7 +398,7 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
             }
         };
 
-        // 5. LÓGICA DE LISTAR TODOS OS CLIENTES (Mantida inalterada)
+        // 5. LÓGICA DE LISTAR TODOS OS CLIENTES
         $(document).on('click', '#btn-listar-todos-clientes', function(e) {
             e.preventDefault(); 
             
@@ -428,7 +428,7 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
             });
         });
         
-        // 6. LÓGICA DE ESCONDER CLIENTES (Mantida inalterada)
+        // 6. LÓGICA DE ESCONDER CLIENTES
         $(document).on('click', '#btn-esconder-clientes', function(e) {
             e.preventDefault(); 
             
@@ -441,6 +441,51 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
             `);
         });
 
+        
+        // 7. LÓGICA DE EXCLUSÃO DE CLIENTES (A CORREÇÃO QUE FALTAVA)
+        $(document).on('click', '.btn-excluir-cliente', function(e) {
+            e.preventDefault(); 
+            
+            var $this = $(this);
+            var id_cliente_para_excluir = $this.data('id'); 
+
+            if (!id_cliente_para_excluir) {
+                alert('Erro interno: ID do cliente para exclusão não encontrado.');
+                return;
+            }
+
+            if (confirm('ATENÇÃO: Você realmente deseja excluir o Cliente ID ' + id_cliente_para_excluir + ' e todos os seus Pets/dados relacionados? Esta ação é IRREVERSÍVEL!')) {
+                
+                $('#status-message-area').html('<div class="alert alert-warning text-center"><i class="fas fa-spinner fa-spin me-2"></i> Excluindo cliente...</div>');
+
+                $.ajax({
+                    url: 'clientes_excluir.php', 
+                    type: 'POST', 
+                    dataType: 'json',
+                    data: { id_cliente: id_cliente_para_excluir }, // Variável esperada pelo PHP
+                    
+                    success: function(response) {
+                        if (response.success) {
+                            $('#status-message-area').html('<div class="alert alert-success">' + response.message + '</div>');
+                            
+                            // Recarrega a lista de clientes para remover o excluído
+                            setTimeout(function() { 
+                                carregarConteudo('clientes_listar.php'); 
+                            }, 1500); 
+
+                        } else {
+                            $('#status-message-area').html('<div class="alert alert-danger">Falha na exclusão: ' + response.message + '</div>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Exibe a resposta crua do PHP para debug
+                        $('#status-message-area').html('<div class="alert alert-danger">Erro de Comunicação com o Servidor! Status: ' + xhr.status + ' (' + status + '). Verifique o console.</div>');
+                        console.error("ERRO CRÍTICO NA EXCLUSÃO:", xhr.responseText);
+                    }
+                });
+            }
+        });
+        
         // CARREGA O CONTEÚDO INICIAL
         carregarConteudo(paginaInicial, false); 
     });

@@ -192,8 +192,8 @@ if ($total_registros > 0) {
         echo '<i class="fas fa-user-edit"></i> Editar';
         echo '</a>';
         
-        // Botão EXCLUIR
-        echo '<a href="#" class="btn btn-sm btn-danger excluir-cliente" data-id="' . $cliente_id . '" title="Excluir Cliente">';
+        // Botão EXCLUIR (CORRIGIDO: Classe 'excluir-cliente' para 'btn-excluir-cliente')
+        echo '<a href="#" class="btn btn-sm btn-danger btn-excluir-cliente" data-id="' . $cliente_id . '" title="Excluir Cliente">';
         echo '<i class="fas fa-trash-alt"></i>';
         echo '</a>';
         
