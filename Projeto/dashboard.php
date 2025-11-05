@@ -485,6 +485,112 @@ $usuario_logado = htmlspecialchars($_SESSION['username']);
                 });
             }
         });
+        // LÓGICA DE BUSCA RÁPIDA DE PRODUTOS
+// Você já tem a lógica de busca de clientes (seção 3). Adapte para produtos.
+$(document).on('submit', '#form-busca-produto-rapida', function(e) {
+    e.preventDefault(); // ESSENCIAL: Impede o redirecionamento padrão
+    
+    var form = $(this);
+    var dados = form.serialize(); 
+    var resultadoArea = $('#resultado-busca-rapida'); 
+
+    resultadoArea.html('<div class="text-center mt-3"><i class="fas fa-spinner fa-spin me-2 text-primary"></i> Buscando produtos...</div>');
+
+    $.ajax({
+        type: 'GET',
+        url: 'produtos_buscar_rapido.php', 
+        data: dados,
+        dataType: 'html', 
+        success: function(data) {
+            resultadoArea.html(data); 
+            inicializarMascarasEValidacoes(); // Reaplicar máscaras se houver campos novos
+        },
+        error: function(xhr, status, error) {
+            resultadoArea.html('<div class="alert alert-danger mt-3">Erro ao buscar produtos.</div>');
+        }
+    });
+});
+// LÓGICA DE EXCLUSÃO DE PRODUTO VIA AJAX
+$(document).on('click', '.btn-excluir-produto', function(e) {
+    e.preventDefault(); // CRUCIAL para evitar qualquer navegação
+    e.stopPropagation(); 
+    
+    // ... (O restante da lógica AJAX para produtos_excluir.php)
+    var $button = $(this);
+    var idProduto = $button.data('id');
+    var $row = $button.closest('tr'); 
+    
+    if (confirm('Tem certeza que deseja EXCLUIR o produto?')) {
+        // ... (Lógica AJAX POST para 'produtos_excluir.php')
+        $.ajax({
+            type: 'POST',
+            url: 'produtos_excluir.php', 
+            data: { id_produto: idProduto }, 
+            dataType: 'json', 
+            // ... (Restante do sucesso e erro)
+            success: function(response) {
+                if (response.success) {
+                    $('#status-message-area').html('<div class="alert alert-success">' + response.message + '</div>');
+                    $row.fadeOut(500, function() { $(this).remove(); });
+                } else {
+                    $('#status-message-area').html('<div class="alert alert-danger">Erro: ' + response.message + '</div>');
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#status-message-area').html('<div class="alert alert-danger">Erro de comunicação ao excluir.</div>');
+            }
+        });
+    }
+});
+// LÓGICA DE LISTAR TODOS OS PRODUTOS
+$(document).on('click', '#btn-listar-todos-produtos', function(e) {
+    e.preventDefault();
+    // Isso deve acionar a busca em produtos_buscar_rapido.php com o parâmetro 'listar_todos'
+    
+    var resultadoArea = $('#resultado-busca-rapida'); 
+    resultadoArea.html('<div class="text-center mt-3"><i class="fas fa-spinner fa-spin me-2 text-info"></i> Carregando todos os produtos...</div>');
+
+    $.ajax({
+        type: 'GET',
+        url: 'produtos_buscar_rapido.php', 
+        data: { 
+            busca_nome: '', 
+            busca_categoria: '', 
+            busca_fornecedor: '', 
+            listar_todos: 'true' // Este parâmetro diz ao PHP para ignorar filtros
+        },
+        dataType: 'html', 
+        success: function(data) {
+            resultadoArea.html(data);
+            // Opcional: Recarrega a página de listagem completa, que já faz a listagem completa por padrão:
+            // carregarConteudo('produtos_listar.php'); 
+        },
+        error: function(xhr, status, error) {
+             resultadoArea.html('<div class="alert alert-danger mt-3">Erro ao listar todos os produtos.</div>');
+        }
+    });
+});
+
+// LÓGICA DE ESCONDER/FILTRAR PRODUTOS (Esconder Fora de Estoque)
+     $(document).on('click', '#btn-esconder-produtos', function(e) {
+    e.preventDefault();
+    
+    var $button = $(this);
+    var $produtosForaEstoque = $('#tabela-produtos .produto-item').filter(function() {
+        return $(this).data('estoque') === 0; 
+    });
+    
+    if ($button.hasClass('active')) {
+        $produtosForaEstoque.fadeIn(300);
+        $button.removeClass('active btn-secondary').addClass('btn-warning');
+        $button.html('<i class="fas fa-eye-slash me-2"></i> Esconder Fora de Estoque');
+        
+    } else {
+        $produtosForaEstoque.fadeOut(300);
+        $button.addClass('active btn-secondary').removeClass('btn-warning');
+        $button.html('<i class="fas fa-eye me-2"></i> Mostrar Fora de Estoque (' + $produtosForaEstoque.length + ')');
+    }
+});
         
         // CARREGA O CONTEÚDO INICIAL
         carregarConteudo(paginaInicial, false); 

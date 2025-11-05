@@ -9,7 +9,7 @@ require_once 'conexao.php';
 
 function get_categorias($pdo) {
     try {
-        $stmt = $pdo->query("SELECT id, nome FROM categorias_produto ORDER BY nome");
+        $stmt = $pdo->query("SELECT id, nome FROM categoria_produto ORDER BY nome");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         // Em caso de erro (ex: tabela categorias_produtos não existe)

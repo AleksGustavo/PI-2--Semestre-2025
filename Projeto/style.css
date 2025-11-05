@@ -1,99 +1,52 @@
-  /* Variáveis CSS para cores */
-        :root {
-            --primeira-cor: #6f4e37;
-            --cor-escura: #3c2c1a;
-            --cor-texto: #4b3621;
-            --cor-inicio: #474747ff;
-            --cor-fim: #3c2c1a;
-        }
-        
-        /* Estilos do corpo para centralizar o container de login */
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            display: flex;
-            /* Centraliza horizontalmente */
-            justify-content: center;
-            /* Centraliza verticalmente */
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--cor-inicio)0%, var(--cor-fim)100%);
-        }
+/* Arquivo: style.css */
 
-        /* Container principal do formulário */
-        .login-container{
-            background-color: #e9d4afff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); 
-            width: 350px;
-            /* Garante que o texto, incluindo o título e a mensagem de status, esteja centralizado */
-            text-align: center; 
-        }
+/* --- Configurações Gerais do Body (Fundo Gradiente Marrom MUITO Escuro e Forte) --- */
+body {
+    /* Degradê de marrom profundo (#3E2723 - Brown Escuro) para marrom rico (#5D4037 - Brown Médio) */
+    background: linear-gradient(to bottom right, #3E2723, #5D4037); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0; 
+}
 
-        /* Estilo do título H2 */
-        h2{
-            color: var(--primeira-cor);
-            margin-bottom: 30px;
-        }
+/* --- Estilo do Card de Login (Bootstrap) --- */
+.login-card {
+    max-width: 500px; 
+    width: 90%; 
+    padding: 2rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6); /* Sombra ainda mais forte */
+    border-radius: 10px; 
+    background-color: #ffffff; 
+}
 
-        /* Estilo para a mensagem de status que será exibida pelo PHP */
-        .status-message {
-            margin-bottom: 20px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        
-        /* Agrupamento de campos de input */
-        .input-group{
-            margin-bottom: 20px;
-            text-align: left; /* Retorna o alinhamento para a esquerda apenas dentro dos grupos */
-            position: relative; /* Necessário para posicionar o ícone */
-        }
+/* --- Estilo da Logo/Imagem (Alteração: Borda do Logo para combinar) --- */
+.login-card img {
+    max-width: 120px;
+    border: 3px solid #795548; /* Borda agora em Marrom Médio */
+    box-shadow: 0 0 10px rgba(121, 85, 72, 0.7); /* Sombra marrom para harmonizar */
+}
 
-        /* Campo de texto e senha */
-        .input-group input{
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-            padding-left: 40px; /* Espaço para o ícone */
-        }
+/* --- Estilo do Botão Principal (Alteração: Botão para Marrom Escuro) --- */
+.login-btn {
+    background-color: #5D4037; /* Marrom do degradê */
+    border-color: #5D4037;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+}
 
-        /* Ícones dentro dos campos de input */
-        .input-group span{
-            position: absolute;
-            padding: 10px;
-            color: var(--cor-texto);
-            /* Alinha o ícone verticalmente */
-            top: 0; 
-            left: 0;
-        }
+.login-btn:hover {
+    background-color: #3E2723; /* Marrom mais escuro no hover */
+    border-color: #3E2723;
+    transform: translateY(-1px); 
+}
 
-        /* Botão de login */
-        .login-btn{
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primeira-cor);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-            transition: background-color 0.3s;
-        }
+/* --- Estilo das Mensagen de Status --- */
+.text-success {
+    color: #198754 !important;
+}
 
-        .login-btn:hover{
-            background-color: var(--cor-escura);
-        }
-
-        /* Links adicionais (Esqueci a Senha, etc.) */
-        .links a{
-            color: var(--cor-texto);
-            text-decoration: none;
-            font-size: 14px;
-            display: block;
-            margin-top: 15px;
-        }
+.fa-spin {
+    color: #198754;
+}
