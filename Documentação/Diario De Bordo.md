@@ -45,3 +45,8 @@ Marcos:
 
 28/10
   Hoje adicionei as funcionalidades de sair (logout) e volta para a tela login, estamos na reta final.
+
+
+03/11
+ Marcos:
+   Hoje estava arrumando algumas parte do crud, o delete dos clientes não estava funcionando, conseguir arrumar.
