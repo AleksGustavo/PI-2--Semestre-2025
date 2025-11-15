@@ -8,6 +8,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 
+INSERT INTO `agendamento` (`id`, `pet_id`, `servico_id`, `funcionario_id`, `data_agendamento`, `status`, `observacoes`, `created_at`, `updated_at`) VALUES
+(11, 3, 1, 5, '2025-11-26 17:00:00', 'agendado', '0', '2025-11-10 14:55:25', '2025-11-10 14:55:25'),
+(12, 3, 1, 5, '2025-11-26 17:00:00', 'agendado', '0', '2025-11-10 14:55:25', '2025-11-10 14:55:25'),
+(13, 23, 1, 6, '2025-11-28 15:30:00', 'agendado', '0', '2025-11-10 15:01:47', '2025-11-10 15:01:47'),
+(14, 23, 1, 6, '2025-11-28 15:30:00', 'agendado', '0', '2025-11-10 15:01:47', '2025-11-10 15:01:47');
+
 INSERT INTO `carteira_vacina` (`id`, `pet_id`, `nome_vacina`, `data_aplicacao`, `data_proxima`, `veterinario`, `observacoes`, `created_at`) VALUES
 (1, 5, 'V8 Polivalente', '2024-03-01', '2025-03-01', 'Rogério Junior', '1ª dose reforço anual.', '2025-10-27 17:19:47'),
 (2, 7, 'V10 Polivalente', '2025-01-10', '2026-01-10', 'Rogério Junior', 'Reforço anual.', '2025-10-27 17:19:47'),
@@ -68,7 +74,11 @@ INSERT INTO `cliente` (`id`, `nome`, `cpf`, `data_nascimento`, `telefone`, `emai
 (19, 'Renata Nunes', '00770077007', '1996-03-01', '21987776661', 'renata.n@email.com', '20000-101', 'Rua Eta', 'Copacabana', '70', NULL, 'Dois cães grandes e pequenos.', 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39'),
 (20, 'Vitor Hugo', '00880088008', '1982-10-10', '31987776662', 'vitor.h@email.com', '30000-101', 'Rua Theta', 'Funcionários', '80', NULL, NULL, 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39'),
 (21, 'Marisa Diniz', '00990099009', '1991-06-06', '41987776663', 'marisa.d@email.com', '80000-102', 'Rua Iota', 'Batel', '90', NULL, NULL, 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39'),
-(22, 'Lucas Fontes', '01010101010', '1984-02-02', '51987776664', 'lucas.f@email.com', '90000-102', 'Rua Kappa', 'Petrópolis', '100', NULL, NULL, 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39');
+(22, 'Lucas Fontes', '01010101010', '1984-02-02', '51987776664', 'lucas.f@email.com', '90000-102', 'Rua Kappa', 'Petrópolis', '100', NULL, NULL, 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39'),
+(23, 'Aleksander Gustavo', '76757667676676', NULL, '767676676767677', NULL, '13616-140', 'Rua Evaristo Harder', 'Jardim Primavera', '426', '', NULL, 1, '2025-10-31 21:03:58', '2025-10-31 21:03:58'),
+(24, 'Aleksander Gustavo', '441.768.338-74', '1997-07-28', '(19) 97150-8170', NULL, '13616-140', 'Rua Evaristo Harder', 'Jardim Primavera', '426', '', NULL, 1, '2025-11-11 01:00:03', '2025-11-11 01:00:03'),
+(25, 'Jurandir Silveira', '342.245.258-71', '1985-10-11', '(19) 99987-4558', NULL, '13616-530', 'Augusto Salciotto', 'Parque São Manoel', '235', '', NULL, 1, '2025-11-13 22:14:56', '2025-11-13 22:14:56'),
+(26, 'João de Souza Filho', '353.785.118-75', '2003-12-11', '(19) 99999-7575', NULL, '13610-000', 'Não Sei Qual', 'La da Cidade', '24', '', NULL, 1, '2025-11-13 23:28:14', '2025-11-13 23:28:14');
 
 INSERT INTO `compra` (`id`, `fornecedor_id`, `funcionario_id`, `data_compra`, `data_entrega`, `valor_total`, `status`, `forma_pagamento`, `observacoes`, `created_at`) VALUES
 (1, 1, 10, '2025-10-01', '2025-10-05', 4500.00, 'recebido', 'Boleto', 'Compra grande de rações, estoque principal.', '2025-10-27 17:19:47'),
@@ -102,17 +112,17 @@ INSERT INTO `fornecedor` (`id`, `nome_fantasia`, `razao_social`, `cnpj`, `telefo
 (9, 'Alimentos Naturais', 'Naturais Pet Eireli', '06060606000106', '3133334444', 'contato@naturaispet.com', 'Lúcia', '30000-001', 'Rua Orgânica', 'Verde', '900', NULL, NULL, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47'),
 (10, 'Aves & Cia', 'Aves Companhia Ltda', '07070707000107', '6134345555', 'vendas@avesecia.com', 'Fernanda', '70000-001', 'Qd. dos Pássaros', 'Asa Norte', '1000', NULL, NULL, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47');
 
-INSERT INTO `funcionario` (`id`, `usuario_id`, `nome`, `cpf`, `telefone`, `cep`, `rua`, `bairro`, `numero`, `complemento`, `observacoes`, `created_at`, `updated_at`) VALUES
-(1, 3, 'Aleks Silva', '11111111111', '19988887777', '13616-001', 'Rua A', 'Bairro 1', '10', NULL, 'Responsável por Vendas e Caixa', '2025-10-17 02:13:52', '2025-10-17 02:13:52'),
-(2, 6, 'Wanderson Souza', '22222222222', '19966665555', '13616-002', 'Rua B', 'Bairro 2', '20', NULL, 'Groomer Júnior', '2025-10-18 05:27:41', '2025-10-18 05:27:41'),
-(3, 7, 'Administrativo Pet', '33333333333', '19955554444', '13616-003', 'Rua C', 'Bairro 3', '30', NULL, 'Responsável pelo financeiro.', '2025-10-22 03:31:11', '2025-10-22 03:31:11'),
-(4, 8, 'Weslwn Santos', '44444444444', '19944443333', '13616-004', 'Rua D', 'Bairro 4', '40', NULL, 'Auxiliar de Vendas', '2025-10-27 16:27:36', '2025-10-27 16:27:36'),
-(5, 9, 'Bartolomeu Oliveira', '55555555555', '11911112222', '01000-010', 'Rua dos Pinhais', 'Centro', '123', NULL, 'Vendedor Senior', '2025-10-28 13:00:00', '2025-10-28 13:00:00'),
-(6, 10, 'Claudia Ferreira', '66666666666', '11933334444', '01000-011', 'Rua dos Mercados', 'Centro', '456', NULL, 'Groomer Pleno', '2025-10-28 13:05:00', '2025-10-28 13:05:00'),
-(7, 11, 'Rogério Junior', '77777777777', '11955556666', '01000-012', 'Rua das Flores', 'Bela Vista', '789', NULL, 'Veterinário (Consultas)', '2025-10-28 13:10:00', '2025-10-28 13:10:00'),
-(8, 12, 'Patricia Martins', '88888888888', '11977778888', '01000-013', 'Av. Ibirapuera', 'Moema', '101', NULL, 'Auxiliar de Banho e Tosa', '2025-10-28 13:15:00', '2025-10-28 13:15:00'),
-(9, 1, 'Super Admin User', '99999999999', '11910101010', '01000-014', 'Rua Principal', 'Centro', '1', NULL, 'Conta de Administrador', '2025-09-28 16:19:19', '2025-09-28 16:19:19'),
-(10, 2, 'Aleksander Gerente', '00000000000', '19900000000', '13616-140', 'Rua Evaristo Harder', 'Jardim Primavera', '426', NULL, 'Gerente da Loja', '2025-10-02 18:09:10', '2025-10-02 18:09:10');
+INSERT INTO `funcionario` (`id`, `usuario_id`, `nome`, `cpf`, `data_nascimento`, `sexo`, `telefone`, `cep`, `rua`, `bairro`, `numero`, `complemento`, `observacoes`, `created_at`, `updated_at`) VALUES
+(1, 3, 'Aleksander Gustavo', '11111111111', '1997-07-28', '', '19988887777', '13616-001', 'Rua A', 'Bairro 1', '10', NULL, 'Responsável por Vendas e Caixa', '2025-10-17 02:13:52', '2025-11-12 15:00:08'),
+(2, 6, 'Wanderson Souza', '22222222222', NULL, 'Outro', '19966665555', '13616-002', 'Rua B', 'Bairro 2', '20', NULL, 'Groomer Júnior', '2025-10-18 05:27:41', '2025-10-18 05:27:41'),
+(3, 7, 'Administrativo Pet', '33333333333', NULL, 'Outro', '19955554444', '13616-003', 'Rua C', 'Bairro 3', '30', NULL, 'Responsável pelo financeiro.', '2025-10-22 03:31:11', '2025-10-22 03:31:11'),
+(4, 8, 'Weslwn Santos', '44444444444', NULL, 'Outro', '19944443333', '13616-004', 'Rua D', 'Bairro 4', '40', NULL, 'Auxiliar de Vendas', '2025-10-27 16:27:36', '2025-10-27 16:27:36'),
+(5, 9, 'Bartolomeu Oliveira', '55555555555', NULL, 'Outro', '11911112222', '01000-010', 'Rua dos Pinhais', 'Centro', '123', NULL, 'Vendedor Senior', '2025-10-28 13:00:00', '2025-10-28 13:00:00'),
+(6, 10, 'Claudia Ferreira', '66666666666', NULL, 'Outro', '11933334444', '01000-011', 'Rua dos Mercados', 'Centro', '456', NULL, 'Groomer Pleno', '2025-10-28 13:05:00', '2025-10-28 13:05:00'),
+(7, 11, 'Rogério Junior', '77777777777', NULL, 'Outro', '11955556666', '01000-012', 'Rua das Flores', 'Bela Vista', '789', NULL, 'Veterinário (Consultas)', '2025-10-28 13:10:00', '2025-10-28 13:10:00'),
+(8, 12, 'Patricia Martins', '88888888888', NULL, 'Outro', '11977778888', '01000-013', 'Av. Ibirapuera', 'Moema', '101', NULL, 'Auxiliar de Banho e Tosa', '2025-10-28 13:15:00', '2025-10-28 13:15:00'),
+(9, 1, 'Super Admin User', '99999999999', NULL, 'Outro', '11910101010', '01000-014', 'Rua Principal', 'Centro', '1', NULL, 'Conta de Administrador', '2025-09-28 16:19:19', '2025-09-28 16:19:19'),
+(10, 2, 'Aleksander Gerente', '00000000000', NULL, 'Outro', '19900000000', '13616-140', 'Rua Evaristo Harder', 'Jardim Primavera', '426', NULL, 'Gerente da Loja', '2025-10-02 18:09:10', '2025-10-02 18:09:10');
 
 INSERT INTO `item_compra` (`id`, `compra_id`, `produto_id`, `quantidade`, `preco_custo_unitario`, `subtotal`, `created_at`) VALUES
 (1, 1, 1, 20, 135.00, 2700.00, '2025-10-27 17:19:47'),
@@ -201,7 +211,9 @@ INSERT INTO `pet` (`id`, `nome`, `cliente_id`, `especie_id`, `raca_id`, `data_na
 (30, 'Apolo', 18, 1, 16, '2020-03-20', 38.00, 'Preto e Canela', 1, 1, NULL, NULL, 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39', 'Grande'),
 (31, 'Pipoca', 19, 1, 13, '2024-07-01', 4.00, 'Branco', 0, 0, NULL, NULL, 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39', 'Pequeno'),
 (32, 'Dexter', 19, 1, 15, '2021-10-10', 30.00, 'Dourado', 1, 1, NULL, NULL, 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39', 'Grande'),
-(33, 'Bela', 20, 2, 27, '2023-05-05', 6.80, 'Malhado', 1, 1, NULL, NULL, 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39', NULL);
+(33, 'Bela', 20, 2, 27, '2023-05-05', 6.80, 'Malhado', 1, 1, NULL, NULL, 1, '2025-10-28 12:50:39', '2025-10-28 12:50:39', NULL),
+(34, 'Nymeria', 1, 1, 23, '2025-10-31', 0.00, NULL, 0, 0, NULL, NULL, 1, '2025-10-31 21:06:10', '2025-10-31 21:06:10', NULL),
+(35, 'Nymeria', 24, 1, 24, '2016-11-10', 22.00, NULL, 1, 0, NULL, NULL, 1, '2025-11-14 00:44:11', '2025-11-14 00:44:11', NULL);
 
 INSERT INTO `preco_servico_porte` (`id`, `servico_id`, `porte`, `preco`) VALUES
 (1, 1, 'Pequeno', 35.00),
@@ -278,7 +290,8 @@ INSERT INTO `raca` (`id`, `nome`, `especie_id`, `created_at`) VALUES
 (40, 'Hamster Anão Russo', 4, '2025-10-25 17:42:22'),
 (41, 'Porquinho-da-Índia', 4, '2025-10-25 17:42:22'),
 (42, 'Chinchila', 4, '2025-10-25 17:42:22'),
-(43, 'Twister (Rato de Estimação)', 4, '2025-10-25 17:42:22');
+(43, 'Twister (Rato de Estimação)', 4, '2025-10-25 17:42:22'),
+(44, 'Pinscher', 1, '2025-11-07 23:38:51');
 
 INSERT INTO `servico` (`id`, `nome`, `descricao`, `preco`, `duracao_media`, `ativo`, `created_at`, `updated_at`) VALUES
 (1, 'Banho', 'Banho completo com produtos adequados', 35.00, 45, 1, '2025-09-28 16:19:19', '2025-09-28 16:19:19'),
@@ -290,17 +303,22 @@ INSERT INTO `servico` (`id`, `nome`, `descricao`, `preco`, `duracao_media`, `ati
 INSERT INTO `super_usuario` (`id`, `usuario_id`, `cargo`, `created_at`) VALUES
 (1, 1, 'Administrador Master', '2025-09-28 16:19:19');
 
-INSERT INTO `usuario` (`id`, `usuario`, `senha_hash`, `email`, `papel_id`, `ativo`, `created_at`, `updated_at`) VALUES
-(1, 'superadmin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'superadmin@petshop.com', 1, 1, '2025-09-28 16:19:19', '2025-09-28 16:19:19'),
-(2, 'aleksander', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'aleksander@petshop.com', 1, 1, '2025-10-02 18:09:10', '2025-10-02 18:09:10'),
-(3, 'Aleks', '$2y$10$MPSHs.scMLC//18Xxhlcxelx28Qm.htsWISO.aAIfHn0h5PxuOEuK', 'Aleks@petshop.com', 2, 1, '2025-10-17 02:13:52', '2025-10-17 02:13:52'),
-(6, 'Wanderson', '123456', 'wanderson@hotmail.com', 2, 1, '2025-10-18 05:27:41', '2025-10-18 05:27:41'),
-(7, 'admin', '$2y$10$rtkxi1teQqGJbSfsrXnca.grZltwJhIQYw1pjbN56CjzgqkYPFsxi', 'admin@petshop.com', 2, 1, '2025-10-22 03:31:11', '2025-10-22 03:31:11'),
-(8, 'weslwn', '$2y$10$gkGMIq2LxkCbuHrUi64yyOn1hVYIL/Z5REy0n3Xtr5Mc0CEe1GnSa', 'weslwn@petshop.com', 2, 1, '2025-10-27 16:27:36', '2025-10-27 16:27:36'),
-(9, 'bartolomeu', 'hash_senha_9', 'bartolomeu@petshop.com', 2, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47'),
-(10, 'claudia', 'hash_senha_10', 'claudia@petshop.com', 2, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47'),
-(11, 'rogerio', 'hash_senha_11', 'rogerio@petshop.com', 3, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47'),
-(12, 'patricia', 'hash_senha_12', 'patricia@petshop.com', 3, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47');
+INSERT INTO `usuario` (`id`, `usuario`, `senha_hash`, `token_senha`, `token_expira`, `email`, `papel_id`, `ativo`, `created_at`, `updated_at`) VALUES
+(1, 'superadmin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', NULL, NULL, 'superadmin@petshop.com', 1, 1, '2025-09-28 16:19:19', '2025-09-28 16:19:19'),
+(2, 'aleksander', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', NULL, NULL, 'aleksander@petshop.com', 1, 1, '2025-10-02 18:09:10', '2025-10-02 18:09:10'),
+(3, 'Aleks', '$2y$10$MPSHs.scMLC//18Xxhlcxelx28Qm.htsWISO.aAIfHn0h5PxuOEuK', NULL, NULL, 'Aleks@petshop.com', 2, 1, '2025-10-17 02:13:52', '2025-10-17 02:13:52'),
+(6, 'Wanderson', '123456', NULL, NULL, 'wanderson@hotmail.com', 2, 1, '2025-10-18 05:27:41', '2025-10-18 05:27:41'),
+(7, 'admin', '$2y$10$rtkxi1teQqGJbSfsrXnca.grZltwJhIQYw1pjbN56CjzgqkYPFsxi', NULL, NULL, 'admin@petshop.com', 2, 1, '2025-10-22 03:31:11', '2025-10-22 03:31:11'),
+(8, 'weslwn', '$2y$10$gkGMIq2LxkCbuHrUi64yyOn1hVYIL/Z5REy0n3Xtr5Mc0CEe1GnSa', NULL, NULL, 'weslwn@petshop.com', 2, 1, '2025-10-27 16:27:36', '2025-10-27 16:27:36'),
+(9, 'bartolomeu', 'hash_senha_9', NULL, NULL, 'bartolomeu@petshop.com', 2, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47'),
+(10, 'claudia', 'hash_senha_10', NULL, NULL, 'claudia@petshop.com', 2, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47'),
+(11, 'rogerio', 'hash_senha_11', NULL, NULL, 'rogerio@petshop.com', 3, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47'),
+(12, 'patricia', 'hash_senha_12', NULL, NULL, 'patricia@petshop.com', 3, 1, '2025-10-27 17:19:47', '2025-10-27 17:19:47'),
+(13, 'AleksGustavo', '$2y$10$23WFJuJL20ccPMXL3OtAsOEZTwFEhbnfdYG4XNzx9O7B2t3i5/R9G', '16b4a7b37a291eea2c1be96dbfe30591ae2ca49aa8b4c6e8731a81aa88ccf3c9', '2025-11-11 22:18:34', 'aleksandergustavo9@gmail.com', 2, 1, '2025-11-10 23:18:22', '2025-11-12 00:18:34'),
+(14, 'Aleks2', '$2y$10$WUjmLkV98avPb1PSDDFVg.f4JnOKAn2/U0TaHeuRwtyCdbMTxPKRS', NULL, NULL, 'aleksander@gmail.com', 2, 1, '2025-11-10 23:50:14', '2025-11-10 23:50:14'),
+(15, 'Aleksander3', '$2y$10$TR703uKmxKJu6x15k9WX9.ny1PsKFHxhDu6WxQO7NF.jwGDXrg0MC', NULL, NULL, 'aleksander3@petshop.com', 2, 1, '2025-11-11 00:00:34', '2025-11-11 00:00:34'),
+(16, 'Aleks10', '$2y$10$6WjvvLvlJmL05yBNoZIU8eNhFMn1RavG5e9tENxbfLYvxW/f6waxa', NULL, NULL, 'aleksander@email.com', 2, 1, '2025-11-11 00:05:32', '2025-11-11 00:05:32'),
+(17, 'Aleksander12345', '$2y$10$k2JVW2YzKWIFkPjJEZQXWeULxuA5GCqnzPUusRc1u9/rUdJuKdD2C', NULL, NULL, 'aleksanderg@hotmail.com', 2, 1, '2025-11-11 00:28:55', '2025-11-11 00:28:55');
 
 INSERT INTO `vacina` (`id`, `nome`, `doenca_protecao`, `validade_padrao_meses`, `preco`, `observacoes`, `ativo`, `created_at`, `updated_at`, `especie_id`) VALUES
 (1, 'V8 Polivalente', 'Cinonose, Parvovirose, Adenovirose, Hepatite, Parainfluenza, Coronavírus, Leptospirose', 12, 80.00, NULL, 1, '2025-10-28 12:50:14', '2025-10-28 12:50:14', 1),
